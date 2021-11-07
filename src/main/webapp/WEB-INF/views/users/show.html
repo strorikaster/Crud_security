@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User</title>
+</head>
+<body>
+<table>
+    <tr>
+        <td>
+            <label>Id:</label>
+                <span th:text="${user.getId()}">VALUE</span>
+        </td>
+        </tr>
+    <tr>
+        <td>
+            <label>Name:</label>
+               <span th:text="${user.getName()}">VALUE</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Surname:</label>
+               <span th:text="${user.getSurName()}">VALUE</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Email:</label>
+               <span th:text="${user.getEmail()}">VALUE</span>
+        </td>
+</tr>
+    <tr>
+        <td>
+            <label>Age:</label>
+            <span th:text="${user.getAge()}">VALUE</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Username:</label>
+            <span th:text="${user.getName()}">VALUE</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Password:</label>
+            <span th:text="${user.getPassword()}">VALUE</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label>Role(s):</label>
+            <!--span th:text="${user.getRoles}">VALUE</span-->
+            <div th:each="role : ${user.roles}">
+                <!--div th:text="${stats.index + 1}">1</div-->
+                <div th:text="${user.role}">Role</div>
+                <!--span th:text="${user.getRoles}">VALUE</span-->
+            </div>
+        </td>
+    </tr>
+</table>
+
+<a th:href="@{/users/{id}/edit(id=${user.getId()})}">Edit</a>
+
+<form th:method="DELETE" th:action="@{/users/{id}(id=${user.getId()})}">
+    <input type="submit" value="Delete user"/>
+</form>
+
+<br>
+<a th:href="@{/logout}">Logout</a>
+
+</body>
+</html>

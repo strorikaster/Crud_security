@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update user</title>
+</head>
+<body>
+<form th:method="PATCH" th:action="@{/users/{id}(id=${user.getId()})}" th:object="${user}">
+    <div>
+        <label>Update user:</label>
+        <br>
+        <label for="name">Enter user name:</label>
+        <input type="text" th:field="*{name}" id="name"/>
+        <div style="color:red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</div>
+        <br>
+        <label for="surname">Enter user surname:</label>
+        <input type="text" th:field="*{surName}" id="surname"/>
+        <div style="color:red" th:if="${#fields.hasErrors('surName')}" th:errors="*{surName}">Surname error</div>
+        <br>
+        <label for="email">Enter user email:</label>
+        <input type="text" th:field="*{email}" id="email"/>
+        <div style="color:red" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Name error</div>
+        <br>
+        <label for="age">Enter user age:</label>
+        <input type="text" th:field="*{age}" id="age"/>
+        <div style="color:red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">Age error</div>
+        <br>
+        <label for="username">Enter username:</label>
+        <input type="text" th:field="*{username}" id="username"/>
+        <div style="color:red" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Username error</div>
+        <br>
+        <label for="password">Enter password:</label>
+        <input type="text" th:field="*{password}" id="password"/>
+        <div style="color:red" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</div>
+        <br>
+        <!--label for="roles">Enter roles:</label>
+        <input type="text" th:field="*{roles}" id="roles"/>
+        <div style="color:red" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}">Role(s) error</div-->
+        <label for="roles">Roles</label>
+        <div id="roles">
+            <div th:each="role : ${roles}">
+                <input type="checkbox" name="roles" th:checked="${user.hasRole('__${role.name}__')}" th:id="${roles}" th:value="${roles}">
+                <label  th:for="${roles}" th:text="${roles}"/>
+            </div>
+        </div>
+        <label for="enabled-row">&nbsp;</label>
+        <div id="enabled-row">
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" name="roles" th:checked="*{isEnabled()}" id="enabled" th:field="*{enabled}">
+                <label class="form-check-label" for="enabled">Is enabled</label>
+            </div>
+        </div>
+        <br>
+        <input type="submit" value="Update user">
+        <br>
+        <a th:href="@{/logout}">Logout</a>
+    </div>
+</form>
+</body>
+</html>

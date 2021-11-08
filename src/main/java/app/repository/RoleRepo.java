@@ -1,10 +1,10 @@
-package app.service;
+package app.repository;
 
 import app.model.Role;
 
 import java.util.List;
 
-public interface RoleService {
+public interface RoleRepo {
     Role getRoleByName(String name);
 
     Role getRoleById(Long id);
@@ -12,5 +12,4 @@ public interface RoleService {
     List<Role> allRoles();
 
     Role getDefaultRole();
-
 }

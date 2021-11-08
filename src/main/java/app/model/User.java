@@ -2,90 +2,95 @@ package app.model;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
-    public class User implements UserDetails {
-
-    String role;
+@Table(name = "tab_users")
+public class User implements Serializable, UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column
-    @NotEmpty(message = "Empty values not allowed")
-    @Size(min = 2, max = 30, message = "Name should be between 2 and 30 character")
-    private String username;
-    @Column
-    @NotEmpty(message = "Empty values not allowed")
-    @Size(min = 4, max = 8, message = "Password should be between 4 and 8 character")
-    private String password;
-    @Column
-    @NotEmpty(message = "Empty values not allowed")
-    @Size(min = 2, max = 30, message = "Name should be between 2 and 30 character")
-    private String name;
-    @Column
-    @NotEmpty(message = "Empty values not allowed")
-    private String surName;
-    @Column
-    @NotEmpty(message = "Empty values not allowed")
-    @Email(message = "Not correct email entered")
-    private String email;
-    @Column
-    @Min(value = 0, message = "Age must be greater than 0")
-    private Integer age;
-    @OneToMany
-    @JoinColumn(name = "user_id")
-            //(mappedBy = "user", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE})
-    //@ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles = new HashSet();
+    private Long id;
 
+    @Column(name = "username", unique = true)
+    private String username;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "email")
+    private String email;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @JoinTable(name = "tab_users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     public User() {
     }
 
-    public User(int id, String name, String surName, String email, Integer age, String username, String password, Set<Role> roles) {
-        this.id = id;
-        this.name = name;
-        this.surName = surName;
-        this.email = email;
-        this.age = age;
+    public User(String username, String password, String firstName, String lastName, String email, Set<Role> roles) {
         this.username = username;
         this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
         this.roles = roles;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getSurName() {
-        return surName;
+    @Override
+    public String getPassword() {
+        return password;
     }
 
-    public void setSurName(String surName) {
-        this.surName = surName;
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -96,16 +101,17 @@ import java.util.Set;
         this.email = email;
     }
 
-    public Integer getAge() {
-        return age;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
-    public String getUsername() {
-        return username;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getRoles();
     }
 
     @Override
@@ -128,45 +134,35 @@ import java.util.Set;
         return true;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(username, user.username) &&
+                Objects.equals(password, user.password) &&
+                Objects.equals(firstName, user.firstName) &&
+                Objects.equals(lastName, user.lastName) &&
+                Objects.equals(email, user.email) &&
+                Objects.equals(roles, user.roles);
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+    public int hashCode() {
+        return Objects.hash(id, username, password, firstName, lastName, email, roles);
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        //this.roles = roles;
-        roles.add(new Role(id, role));
-    }
-
-    public boolean hasRole(int roleId) {
-        if (null == roles|| 0 == roles.size()) {
-            return false;
-        }
-        Optional<Role> findRole = roles.stream().filter(role -> roleId == role.getId()).findFirst();
-        return findRole.isPresent();
-    }
-
-    public boolean hasRole(String roleName) {
-        if (null == roles|| 0 == roles.size()) {
-            return false;
-        }
-        Optional<Role> findRole = roles.stream().filter(role -> roleName.equals(role.getRole())).findFirst();
-        return findRole.isPresent();
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", roles=" + roles +
+                '}';
     }
 }

@@ -1,11 +1,10 @@
-package app.service;
+package app.repository;
 
-import org.springframework.security.core.userdetails.UserDetailsService;
 import app.model.User;
 
 import java.util.List;
 
-public interface UserService extends UserDetailsService {
+public interface UserRepo {
     void addUser(User user);
 
     void deleteUser(Long id);
@@ -15,4 +14,7 @@ public interface UserService extends UserDetailsService {
     User getUserById(Long id);
 
     List<User> getAllUsers();
+
+    User getUserByUsername(String username);
+
 }
